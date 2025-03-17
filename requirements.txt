@@ -1,0 +1,8 @@
+streamlit
+pandas 
+numpy 
+tldextract 
+plotly 
+scikit-learn 
+python-whois 
+requests

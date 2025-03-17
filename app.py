@@ -1,3 +1,4 @@
+#pip install streamlit pandas numpy tldextract plotly scikit-learn python-whois requests
 import streamlit as st
 import pandas as pd
 import numpy as np
