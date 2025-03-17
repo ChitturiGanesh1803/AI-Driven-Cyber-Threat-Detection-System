@@ -256,8 +256,8 @@ def main():
                     if st.button("Open URL in Browser"):
                         webbrowser.open(url_input)
             
-                else:
-                    st.error("Potential phishing threat detected. Access blocked.")
+                    else:
+                        st.error("Potential phishing threat detected. Access blocked.")
 
             # Visualization
                 col1, col2 = st.columns(2)
