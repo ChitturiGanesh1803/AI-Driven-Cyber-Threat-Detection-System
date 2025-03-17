@@ -253,11 +253,11 @@ def main():
 
                 # Provide a clickable link instead of auto-opening
                     st.markdown(f"🔗 [Click here to open the URL]({url_input})", unsafe_allow_html=True)
-                    if st.button("Open URL in Browser"):
-                        webbrowser.open(url_input)
+                    # if st.button("Open URL in Browser"):
+                    #     webbrowser.open(url_input)
             
-                    else:
-                        st.error("Potential phishing threat detected. Access blocked.")
+                    # else:
+                    #     st.error("Potential phishing threat detected. Access blocked.")
 
             # Visualization
                 col1, col2 = st.columns(2)
