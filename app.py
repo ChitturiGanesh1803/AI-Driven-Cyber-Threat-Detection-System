@@ -216,22 +216,22 @@ def main():
     if col2.button("Analyze", type="primary") and url_input:
         with st.spinner("🔍 Analyzing URL..."):
             try:
-                # Feature extraction
+            # Feature extraction
                 features = analyzer.extract_features(url_input)
                 features_df = pd.DataFrame([features])[model_data['features']]
-                
-                # Model prediction
+
+            # Model prediction
                 prediction = model_data['model'].predict(features_df)[0]
                 proba = model_data['model'].predict_proba(features_df)[0]
-                
-                # VirusTotal check
+
+            # VirusTotal check
                 vt_safe = check_virustotal(url_input)
-                
-                # Results display
+
+            # Results display
                 st.markdown("---")
                 result_class = "safe-card" if prediction == 0 else "phishing-card"
                 result_text = "✅ Certified Safe URL" if prediction == 0 else "⚠️ Confirmed Phishing URL"
-                
+
                 st.markdown(f"""
                     <div class="risk-card {result_class}">
                         <h2 style="color: {'#10B981' if prediction == 0 else '#EF4444'};">{result_text}</h2>
@@ -242,18 +242,24 @@ def main():
                     </div>
                 """, unsafe_allow_html=True)
 
-                # Safety verification and browser action
-                if prediction == 0 and vt_safe:
-                    st.success("Verified safe by both AI model and VirusTotal. Opening URL...")
-                    webbrowser.open(url_input)
-                elif prediction == 0 and vt_safe is None:
-                    st.warning("AI model considers this safe but VirusTotal verification failed")
-                elif prediction == 0 and not vt_safe:
-                    st.error("AI model considers safe but VirusTotal detected risks")
+            # Handling Safe URLs
+                if prediction == 0:
+                    if vt_safe:
+                        st.success("Verified safe by both AI model and VirusTotal.")
+                    elif vt_safe is None:
+                        st.warning("AI model considers this safe, but VirusTotal verification failed.")
+                    else:
+                        st.error("AI model considers safe, but VirusTotal detected risks.")
+
+                # Provide a clickable link instead of auto-opening
+                    st.markdown(f"🔗 [Click here to open the URL]({url_input})", unsafe_allow_html=True)
+                    if st.button("Open URL in Browser"):
+                        webbrowser.open(url_input)
+            
                 else:
                     st.error("Potential phishing threat detected. Access blocked.")
 
-                # Visualization
+            # Visualization
                 col1, col2 = st.columns(2)
                 with col1:
                     st.plotly_chart(create_radar_chart(features), use_container_width=True)
@@ -272,6 +278,66 @@ def main():
 
             except Exception as e:
                 st.error(f"Analysis failed: {str(e)}")
+
+    # if col2.button("Analyze", type="primary") and url_input:
+    #     with st.spinner("🔍 Analyzing URL..."):
+    #         try:
+    #             # Feature extraction
+    #             features = analyzer.extract_features(url_input)
+    #             features_df = pd.DataFrame([features])[model_data['features']]
+                
+    #             # Model prediction
+    #             prediction = model_data['model'].predict(features_df)[0]
+    #             proba = model_data['model'].predict_proba(features_df)[0]
+                
+    #             # VirusTotal check
+    #             vt_safe = check_virustotal(url_input)
+                
+    #             # Results display
+    #             st.markdown("---")
+    #             result_class = "safe-card" if prediction == 0 else "phishing-card"
+    #             result_text = "✅ Certified Safe URL" if prediction == 0 else "⚠️ Confirmed Phishing URL"
+                
+    #             st.markdown(f"""
+    #                 <div class="risk-card {result_class}">
+    #                     <h2 style="color: {'#10B981' if prediction == 0 else '#EF4444'};">{result_text}</h2>
+    #                     <p>Phishing Confidence: {proba[1]*100:.1f}%</p>
+    #                     <div class="disclaimer">
+    #                         Enterprise-grade detection accuracy: {model_data['test_accuracy']*100:.1f}%
+    #                     </div>
+    #                 </div>
+    #             """, unsafe_allow_html=True)
+
+    #             # Safety verification and browser action
+    #             if prediction == 0 and vt_safe:
+    #                 st.success("Verified safe by both AI model and VirusTotal. Opening URL...")
+    #                 webbrowser.open(url_input)
+    #             elif prediction == 0 and vt_safe is None:
+    #                 st.warning("AI model considers this safe but VirusTotal verification failed")
+    #             elif prediction == 0 and not vt_safe:
+    #                 st.error("AI model considers safe but VirusTotal detected risks")
+    #             else:
+    #                 st.error("Potential phishing threat detected. Access blocked.")
+
+    #             # Visualization
+    #             col1, col2 = st.columns(2)
+    #             with col1:
+    #                 st.plotly_chart(create_radar_chart(features), use_container_width=True)
+    #             with col2:
+    #                 fig = px.bar(
+    #                     pd.DataFrame({'Feature': features.keys(), 'Value': features.values()}),
+    #                     x='Feature', y='Value', 
+    #                     title='Feature Analysis',
+    #                     color_discrete_sequence=['#3B82F6']
+    #                 )
+    #                 st.plotly_chart(fig.update_layout(
+    #                     height=400,
+    #                     plot_bgcolor='rgba(0,0,0,0)',
+    #                     paper_bgcolor='rgba(0,0,0,0)'
+    #                 ), use_container_width=True)
+
+    #         except Exception as e:
+    #             st.error(f"Analysis failed: {str(e)}")
 
 if __name__ == "__main__":
     main()
